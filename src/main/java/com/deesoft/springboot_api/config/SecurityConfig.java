@@ -54,7 +54,7 @@ public class SecurityConfig {
                 // อนุญาตเมื่อ login
                 .requestMatchers(HttpMethod.GET, "/api/v1/profile/**").authenticated() // ต้องล็อกอิน
                 .requestMatchers(HttpMethod.PUT, "/api/v1/profile/**").authenticated()
-                // .requestMatchers("/api/v1/users/**").permitAll()
+                // .requestMatchers("/api/v1/profile/**").permitAll()
                 // อนุญาตเฉพาะ ADMIN (ตัวอย่างเพิ่มเติม)
                 .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
                 .anyRequest().authenticated()

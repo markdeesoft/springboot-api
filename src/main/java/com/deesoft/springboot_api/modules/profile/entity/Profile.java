@@ -1,9 +1,9 @@
-package com.deesoft.springboot_api.modules.user.entity;
+package com.deesoft.springboot_api.modules.profile.entity;
 
 import com.deesoft.springboot_api.common.entity.BaseEntity;
 import com.deesoft.springboot_api.modules.profile.entity.Profile;
 
-import org.hibernate.annotations.SQLDelete;
+// import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
@@ -15,11 +15,9 @@ import lombok.Setter;
 @Entity // 👈 ประกาศว่าคลาสนี้คือ Entity ให้ Hibernate นำไปสร้าง Table
 @Table(name = "users")
 @Getter @Setter
-// 🟢 1. เปลี่ยนคำสั่ง deleteById() / delete() ให้เป็นการ Update deleted_at แทน
-@SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
 // 🟢 2. ดักทุก Query (findAll, findById) ให้กรองเอาเฉพาะแถวที่ deleted_at IS NULL (Hibernate 6.3+)
 @SQLRestriction("deleted_at IS NULL")
-public class User extends BaseEntity{
+public class Profile extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,8 +31,7 @@ public class User extends BaseEntity{
 
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    private String role;
 
     private String email;
 

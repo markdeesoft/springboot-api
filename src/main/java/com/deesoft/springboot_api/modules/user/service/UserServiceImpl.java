@@ -90,13 +90,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse updateUser(Long id, UserUpdateRequest req) {
+    public UserResponse updateUser(Long id, UserUpdateRequest request) {
         
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        if (req.getName() != null && !req.getName().isBlank()) {
-            user.setName(req.getName());
+        if (request.getName() != null && !request.getName().isBlank()) {
+            user.setName(request.getName());
         }
 
         if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
@@ -106,16 +106,18 @@ public class UserServiceImpl implements UserService {
                 throw new IllegalArgumentException("Email '" + request.getEmail() + "' is already in use by another user");
             }
 
-            user.setEmail(req.getEmail());
+            user.setEmail(request.getEmail());
         }
 
-        // if (req.getPassword() != null && !req.getPassword().isBlank()) {
-        //     user.setPassword(passwordEncoder.encode(req.getPassword()));
+        // if (request.getPassword() != null && !request.getPassword().isBlank()) {
+        //     user.setPassword(passwordEncoder.encode(request.getPassword()));
         // }
 
-        String targetRole = (request.getRole() != null && !request.getRole().isBlank()) 
-            ? request.getRole() 
-            : "USER";
+        Role targetRole = (request.getRole() != null) 
+            ? request.getRole()
+            : Role.ROLE_USER;
+
+        user.setRole(targetRole); 
 
         User updatedUser = userRepository.save(user);
         return mapToResponse(updatedUser);
