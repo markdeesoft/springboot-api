@@ -30,4 +30,28 @@ public class CustomUserDetailsService implements UserDetailsService {
                 Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()))
         );
     }
+
+    // 🟢 Custom Method 1: ดึง User Entity ตรงๆ
+    public User getUserEntityByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+    }
+
+    // 🟢 Custom Method 2: ดึงเฉพาะ User ID
+    public Long getUserIdByUsername(String username) {
+        return getUserEntityByUsername(username).getId();
+    }
+
+    // @Override
+    // public UserResponse getMyProfileId() {
+    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    
+    //     // 🟢 อ่าน ID จาก Principal Object ใน Memory ได้ทันที
+    //     if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
+    //         Long currentUserId = userDetails.getId();
+    //         return userService.getUserById(currentUserId);
+    //     }
+    
+    //     throw new UnauthorizedException("User authentication invalid");
+    // }
 }

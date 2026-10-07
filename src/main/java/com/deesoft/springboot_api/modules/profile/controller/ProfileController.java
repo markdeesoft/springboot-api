@@ -3,14 +3,9 @@ package com.deesoft.springboot_api.modules.profile.controller;
 import com.deesoft.springboot_api.common.dto.ApiResponse;
 import com.deesoft.springboot_api.modules.profile.dto.*;
 import com.deesoft.springboot_api.modules.profile.service.ProfileService;
-import jakarta.validation.Valid;
 
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/profile")
@@ -31,5 +26,11 @@ public class ProfileController {
     public ResponseEntity<ApiResponse<ProfileResponse>> updateProfile(@RequestBody ProfileUpdateRequest req) {
         ProfileResponse response = profileService.updateProfile(req);
         return ResponseEntity.ok(ApiResponse.success("Profile updated successfully", response));
+    }
+
+    @PatchMapping ("/resetpass")
+    public ResponseEntity<ApiResponse<ProfileResponse>> updateProfile() {
+        ProfileResponse response = profileService.resetPassword();
+        return ResponseEntity.ok(ApiResponse.success("Profile reset password successfully", response));
     }
 }

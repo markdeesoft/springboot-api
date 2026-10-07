@@ -4,8 +4,6 @@ import com.deesoft.springboot_api.modules.user.dto.UserCreateRequest;
 import com.deesoft.springboot_api.modules.user.dto.UserResponse;
 import com.deesoft.springboot_api.modules.user.dto.UserUpdateRequest;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 
 public interface UserService {

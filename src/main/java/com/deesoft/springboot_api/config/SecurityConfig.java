@@ -2,6 +2,9 @@ package com.deesoft.springboot_api.config;
 
 import com.deesoft.springboot_api.security.JwtAuthenticationEntryPoint;
 import com.deesoft.springboot_api.security.JwtAuthenticationFilter;
+
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,11 +15,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -58,8 +61,18 @@ public class SecurityConfig {
                 // อนุญาตเฉพาะ ADMIN (ตัวอย่างเพิ่มเติม)
                 .requestMatchers("/api/v1/users/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/api/auth/logout") // กำหนด URL สำหรับ Logout
+                .addLogoutHandler((request, response, authentication) -> {
+                    // เขียนโค้ดเพื่อเคลียร์ Token หรือลบ Cookie ตรงนี้ได้
+                    SecurityContextHolder.clearContext(); // ล้างข้อมูลการล็อกอินใน Thread ปัจจุบัน
+                })
+                .logoutSuccessHandler((request, response, authentication) -> {
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    response.getWriter().write("Logout Successful");
+                })
             );
-
         // แทรก JwtAuthenticationFilter ก่อน UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

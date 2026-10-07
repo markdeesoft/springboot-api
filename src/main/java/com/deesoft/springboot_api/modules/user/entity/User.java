@@ -1,7 +1,6 @@
 package com.deesoft.springboot_api.modules.user.entity;
 
 import com.deesoft.springboot_api.common.entity.BaseEntity;
-import com.deesoft.springboot_api.modules.profile.entity.Profile;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;

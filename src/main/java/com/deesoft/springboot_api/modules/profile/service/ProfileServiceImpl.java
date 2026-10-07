@@ -1,17 +1,17 @@
 package com.deesoft.springboot_api.modules.profile.service;
 
 import com.deesoft.springboot_api.common.exception.ResourceNotFoundException;
+import com.deesoft.springboot_api.security.CustomUserDetailsService;
 import com.deesoft.springboot_api.modules.profile.dto.*;
 import com.deesoft.springboot_api.modules.profile.entity.*;
 import com.deesoft.springboot_api.modules.profile.repository.ProfileRepository;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+// import org.springframework.security.core.context.SecurityContextHolder;
+
 
 // import java.util.List;
 
@@ -21,21 +21,36 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${app.password.default}")
     private String defaultPassword;
 
+    // private final JwtService tokenProvider;
+    private final CustomUserDetailsService userDetailsService;
     private final ProfileRepository profileRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public ProfileServiceImpl(ProfileRepository profileRepository, PasswordEncoder passwordEncoder) {
+    public ProfileServiceImpl(
+        // JwtService tokenProvider, 
+        CustomUserDetailsService userDetailsService,
+        ProfileRepository profileRepository,
+        PasswordEncoder passwordEncoder
+    ) {
+        // this.tokenProvider = tokenProvider;
+        this.userDetailsService = userDetailsService;
         this.profileRepository = profileRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    private Long getUserDataID(){
+        // String username = tokenProvider.getUsername(token);
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = userDetailsService.getUserIdByUsername(username);
+        return userId;
+    }
+
     public ProfileResponse getProfile() {
 
-        //mockup
-        Long id = 3L;
+        Long currentUserId = getUserDataID();
 
-        Profile user = profileRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found with id: " + id));
+        Profile user = profileRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found with id: " + currentUserId));
         return mapToResponse(user);
     }
 
@@ -53,11 +68,10 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public ProfileResponse updateProfile(ProfileUpdateRequest request) {
         
-        //mockup
-        Long id = 3L;
+        Long currentUserId = getUserDataID();
 
-        Profile user = profileRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Profile not found with id: " + id));
+        Profile user = profileRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found with id: " + currentUserId));
 
         System.out.println(">>> User found in DB: " + user);
 
@@ -67,7 +81,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
 
-            boolean isEmailTaken = profileRepository.existsByEmailAndIdNot(request.getEmail(), id);
+            boolean isEmailTaken = profileRepository.existsByEmailAndIdNot(request.getEmail(), currentUserId);
             if (isEmailTaken) {
                 throw new IllegalArgumentException("Email '" + request.getEmail() + "' is already in use by another user");
             }
@@ -84,7 +98,17 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public ProfileResponse updatePassword(ProfileUpdateRequest req) {
-        return null;
+    public ProfileResponse resetPassword() {
+
+        Long currentUserId = getUserDataID();
+
+        Profile user = profileRepository.findById(currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Profile not found with id: " + currentUserId));
+
+        user.setName(passwordEncoder.encode( defaultPassword ));
+
+        Profile updatedProfile = profileRepository.save(user);
+        return mapToResponse(updatedProfile);
+        
     }
 }
