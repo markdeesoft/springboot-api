@@ -132,5 +132,5 @@ Execute the full test suite using Maven Wrapper:
 Developed by **Full Stack / Backend Software Engineer**
 
 - **Portfolio/Website**: [http://deesoftware.com/profile](http://deesoftware.com/profile)
-- **LinkedIn**: [LinkedIn Profile URL](https://www.linkedin.com/in/nathapan-kuntee)
+- **LinkedIn**: [https://www.linkedin.com/in/nathapan-kuntee](https://www.linkedin.com/in/nathapan-kuntee)
 - **Email**: dev.deesoft@gmail.com
