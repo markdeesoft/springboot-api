@@ -37,9 +37,9 @@ public class UserServiceImpl implements UserService {
         }
 
         // 🟢 2. ตรวจสอบ Email ซ้ำ
-        // if (userRepository.existsByEmail(request.getEmail())) {
-        //     throw new IllegalArgumentException("Email '" + request.getEmail() + "' is already in use");
-        // }
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email '" + request.getEmail() + "' is already in use");
+        }
 
         System.out.println(">>> Users careate: " + request);
 
@@ -47,6 +47,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode( defaultPassword ));
         user.setName(request.getName());
+        user.setEmail(request.getEmail());
         user.setRole(Role.ROLE_USER);
         
         User saved = userRepository.save(user);
@@ -82,6 +83,7 @@ public class UserServiceImpl implements UserService {
         return UserResponse.builder()
                 .id(user.getId())
                 .username(user.getUsername())
+                .email(user.getEmail())
                 .name(user.getName())
                 .role(user.getRole().name())
                 .createdAt(user.getCreatedAt())
@@ -95,18 +97,31 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        if (request.getName() != null && !request.getName().isBlank()) {
-            user.setName(request.getName());
-        }
-
-        if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
-
-            boolean isEmailTaken = userRepository.existsByEmailAndIdNot(request.getEmail(), id);
-            if (isEmailTaken) {
-                throw new IllegalArgumentException("Email '" + request.getEmail() + "' is already in use by another user");
+        if (request.getUsername() != null && !request.getUsername().isBlank()) {
+            if (!request.getUsername().equalsIgnoreCase(user.getUsername())) {
+                boolean isUsernameTaken = userRepository.existsByEmailAndIdNot(request.getUsername(), id);
+                if (isUsernameTaken) {
+                    throw new IllegalArgumentException("Username '" + request.getUsername() + "' is already in use by another user");
+                }
             }
 
+            user.setUsername(request.getUsername());
+        }
+
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            // 🟢 เช็คว่าอีเมลใหม่ ไม่ตรงกับอีเมลเดิม (รองรับกรณีเดิมเป็น null)
+            if (!request.getEmail().equalsIgnoreCase(user.getEmail())) {
+                boolean isEmailTaken = userRepository.existsByEmailAndIdNot(request.getEmail(), id);
+                if (isEmailTaken) {
+                    throw new IllegalArgumentException("Email '" + request.getEmail() + "' is already in use by another user");
+                }
+            }
+            // 🟢 อัปเดตอีเมลเสมอถ้ามีการส่งอีเมลใหม่มา
             user.setEmail(request.getEmail());
+        }
+
+        if (request.getName() != null && !request.getName().isBlank()) {
+            user.setName(request.getName());
         }
 
         // if (request.getPassword() != null && !request.getPassword().isBlank()) {

@@ -23,7 +23,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ApiResponse<UserResponse>> createUser(@Valid @RequestBody UserCreateRequest req) {
 
-        System.out.println(">>> Users careate: " + req);
+        // System.out.println(">>> Users careate: " + req);
         
         UserResponse response = userService.createUser(req);
         return ResponseEntity.status(HttpStatus.CREATED)

@@ -8,12 +8,18 @@ import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity // 👈 ประกาศว่าคลาสนี้คือ Entity ให้ Hibernate นำไปสร้าง Table
 @Table(name = "users")
 @Getter @Setter
+@Builder 
+@NoArgsConstructor    // 🟢 สร้าง Default Constructor (จำเป็นสำหรับ Deserialization)
+@AllArgsConstructor
 // 🟢 1. เปลี่ยนคำสั่ง deleteById() / delete() ให้เป็นการ Update deleted_at แทน
 @SQLDelete(sql = "UPDATE users SET deleted_at = NOW() WHERE id = ?")
 // 🟢 2. ดักทุก Query (findAll, findById) ให้กรองเอาเฉพาะแถวที่ deleted_at IS NULL (Hibernate 6.3+)

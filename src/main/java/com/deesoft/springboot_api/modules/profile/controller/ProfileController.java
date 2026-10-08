@@ -31,6 +31,6 @@ public class ProfileController {
     @PatchMapping ("/resetpass")
     public ResponseEntity<ApiResponse<ProfileResponse>> updateProfile() {
         ProfileResponse response = profileService.resetPassword();
-        return ResponseEntity.ok(ApiResponse.success("Profile reset password successfully", response));
+        return ResponseEntity.ok(ApiResponse.success("Password reset successfully", response));
     }
 }

@@ -9,12 +9,18 @@ import org.hibernate.annotations.SQLRestriction;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity // 👈 ประกาศว่าคลาสนี้คือ Entity ให้ Hibernate นำไปสร้าง Table
 @Table(name = "users")
 @Getter @Setter
+@Builder 
+@NoArgsConstructor 
+@AllArgsConstructor 
 // 🟢 2. ดักทุก Query (findAll, findById) ให้กรองเอาเฉพาะแถวที่ deleted_at IS NULL (Hibernate 6.3+)
 @SQLRestriction("deleted_at IS NULL")
 public class Profile extends BaseEntity{
@@ -26,7 +32,7 @@ public class Profile extends BaseEntity{
     @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
+    // @Column(nullable = false)
     private String password;
 
     private String name;

@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // validation
     // เช็คว่ามี Username นี้ในระบบแล้วหรือยัง (ใช้ตอน Register / Create User)
     boolean existsByUsername(String username);
-    // boolean existsByEmail(String email);
+    boolean existsByEmail(String email);
 
     boolean existsByEmailAndIdNot(String email, Long id);
 

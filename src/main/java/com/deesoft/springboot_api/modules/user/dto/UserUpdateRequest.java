@@ -13,6 +13,7 @@ import lombok.Setter;
 public class UserUpdateRequest {
 
     private String name;
+    private String username;
     // private String password;
 
     @Email (message = "Invalid email format") // 🟢 ตรวจสอบรูปแบบ Email อัตโนมัติ
